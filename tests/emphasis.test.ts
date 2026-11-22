@@ -36,6 +36,7 @@ test("an unknown word still reads as a pill, with its tone's glyph", () => {
 
 test("pills in prose are drawn, code and escaped markers are left as typed", () => {
 	expect(decorate("It [[Done]] now")).toBe("It **✓ Done** now");
+	expect(decorate("[[Done 6]] [[Failed 1]]")).toBe(`**✓ Done${nbsp}6** **✗ Failed${nbsp}1**`);
 	expect(decorate("Run `echo [[Done]]` first")).toBe("Run `echo [[Done]]` first");
 	expect(decorate("A \\[[Done]] stays")).toBe("A \\[[Done]] stays");
 	expect(decorate('A "[[Done]]" quoted')).toBe('A "**✓ Done**" quoted');

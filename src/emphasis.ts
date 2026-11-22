@@ -126,7 +126,7 @@ const HEADING = /^( {0,3}#{1,6}\s+)(.+)$/;
 // A line's leading bold label, after an optional list marker.
 const LEAD_LABEL = /^(\s*(?:[-*+]|\d+\.)?\s*\*\*)([^*`\n]{1,32})(\*\*)/;
 // A [[pill]] of 1-32 characters, not escaped and not holding brackets or a newline.
-const PILL = /(^|[^\\\\])\[\[([^[\]\n]{1,32})\]\]/g;
+const PILL = /(?<!\\)\[\[([^[\]\n]{1,32})\]\]/g;
 const ACTION_LABEL = new RegExp(`(\\*\\*)(${Object.keys(ACTION_ICONS).join("|")})(:\\*\\*)`, "gi");
 // Even parts are prose; odd ones are inline code and stay untouched.
 const CODE_SPAN = /(`+[^`]*?`+)/g;
@@ -157,7 +157,7 @@ function decorateLine(line: string): string {
 	});
 	return result
 		.split(CODE_SPAN)
-		.map((part, index) => (index % 2 === 1 ? part : part.replace(PILL, (_, lead: string, label: string) => lead + pill(label))))
+		.map((part, index) => (index % 2 === 1 ? part : part.replace(PILL, (_, label: string) => pill(label))))
 		.join("");
 }
 

@@ -21,9 +21,9 @@ export const register: Register = (on, options) => {
 		return { displayContent };
 	});
 
-	on("turn.complete", (_$, e, next) => {
-		for (const id of [...streams.keys()]) if (id !== e.turnId) streams.delete(id);
-		return next(e);
+	// A stream whose final flush never came (an interrupted reply) is dropped here, so the map stays small.
+	on("turn.complete", () => {
+		streams.clear();
 	});
 
 	// The rules travel with the renderer: a session that is not drawing pills is not told to write them.
