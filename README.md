@@ -18,6 +18,10 @@ It changes only what is drawn. The stored message, ctrl+o, copied text and the m
 
 Claude Code draws an assistant reply through its own Markdown renderer. `MessageDisplay` can replace the text shown while a reply streams, but that text is drawn as Markdown with control characters stripped, so a plugin cannot set a background color. Emphasis therefore carries tone with a one-cell glyph and bold weight, which works in every terminal with no extra font.
 
+### Two hooks draw the same text
+
+`classic.MessageDisplay` draws a reply as it streams, and a `ui.render` hook on `AssistantMessage` draws the transcript's own row from the same tables. Both are needed: the interactive renderer drops a `MessageDisplay` hook's `displayContent` (anthropics/claude-code#83957), so the streaming hook alone shows nothing on screen. Keeping both means a build that fixes that bug draws the row either way — `decorate` leaves an already-drawn line as it is, so no glyph doubles.
+
 ## Install
 
 Add this repository as a marketplace and install from it:

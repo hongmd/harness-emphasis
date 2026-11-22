@@ -1,6 +1,6 @@
 import type { Register } from "claude-code";
 
-import { Emphasizer } from "../src/emphasis";
+import { decorate, Emphasizer } from "../src/emphasis";
 import { replyGuidance } from "../src/guidance";
 
 export const register: Register = (on, options) => {
@@ -26,6 +26,15 @@ export const register: Register = (on, options) => {
 		if (e.final) streams.delete(e.message_id);
 
 		return { displayContent };
+	});
+
+	// MessageDisplay is dropped by the interactive renderer (anthropics/claude-code#83957), so the
+	// transcript's own row is drawn from the same tables. decorate() is idempotent, so where
+	// MessageDisplay does reach the screen the two do not double a glyph.
+	on("ui.render", { component: "AssistantMessage" }, (_$, e, next) => {
+		if (options.display === false) return next(e);
+		const text = e.props.isSummary ? e.props.text : decorate(e.props.text);
+		return next({ ...e, props: { ...e.props, text } });
 	});
 
 	// The rules travel with the renderer: a session that is not drawing pills is not told to write them.
