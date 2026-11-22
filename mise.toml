@@ -16,6 +16,10 @@ run = "claude plugin test ."
 description = "Validate the manifest and the hooks module the way the engine will"
 run = "claude plugin validate ."
 
+[tasks.changelog]
+description = "Check that CHANGELOG.md matches the version and its links"
+run = "node scripts/changelog.mjs"
+
 [tasks.check]
-description = "Type-check, test and validate"
-depends = ["typecheck", "test", "validate"]
+description = "Type-check, test, validate and check the changelog"
+depends = ["typecheck", "test", "validate", "changelog"]

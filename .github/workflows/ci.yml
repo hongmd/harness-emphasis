@@ -17,6 +17,7 @@ jobs:
       - run: mise run typecheck
       - run: mise run test
       - run: mise run validate
+      - run: mise run changelog
 
   release:
     needs: check
@@ -36,5 +37,6 @@ jobs:
           if gh release view "$tag" --json tagName >/dev/null 2>&1; then
             echo "$tag already released; nothing to do"
           else
-            gh release create "$tag" --target "$GITHUB_SHA" --generate-notes --title "$tag"
+            node scripts/changelog.mjs --print > "$RUNNER_TEMP/notes.md"
+            gh release create "$tag" --target "$GITHUB_SHA" --notes-file "$RUNNER_TEMP/notes.md" --title "$tag"
           fi

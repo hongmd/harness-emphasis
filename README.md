@@ -106,22 +106,24 @@ To keep the drawing and write your own rules, turn `guidance` off.
 
 ```sh
 mise install
-mise run check      # type-check, test and validate, as CI does
+mise run check      # everything CI runs: typecheck, test, validate, changelog
 mise run test       # the rules, without Claude Code running
 mise run validate   # what the engine will refuse
 ```
 
-`src/` imports nothing outside the standard library, so `mise run typecheck` checks it with no config file. `hooks/register.ts` imports the engine's types and is checked by `mise run validate` instead. CI runs the same typecheck, test and validate steps on every push and pull request.
+`src/` imports nothing outside the standard library, so `mise run typecheck` checks it with no config file. `hooks/register.ts` imports the engine's types and is checked by `mise run validate` instead. CI runs the same four steps on every push and pull request.
 
 The rules all live in `src/emphasis.ts` and are tested without Claude Code running. `src/guidance.ts` holds the prompt section and reads its word lists from the same tables.
 
 ### Releases
 
-Each release is listed in [CHANGELOG.md](CHANGELOG.md). The version lives in `.claude-plugin/plugin.json` (and is mirrored in `package.json`). Bump both, add a CHANGELOG entry, push to `main`, and CI tags that commit `v<version>` and publishes a GitHub release with generated notes. A version that already has a release is left alone, so merging does not re-tag.
+Each release is listed in [CHANGELOG.md](CHANGELOG.md). The version lives in `.claude-plugin/plugin.json` (and is mirrored in `package.json`). Bump both, add a CHANGELOG section for that version, push to `main`, and CI tags that commit `v<version>` and publishes a release whose notes are that section, verbatim. `mise run changelog` fails if the file has no section for the current version, an empty section, or a link to a tag the file does not cover — so bad notes fail the build before they can ship. A version that already has a release is left alone, so merging does not re-tag.
 
 ```sh
 npm version --no-git-tag-version patch   # or minor / major
 jq -r .version package.json              # copy it into .claude-plugin/plugin.json
+$EDITOR CHANGELOG.md                     # add the section for the new version
+mise run changelog                       # catches a missing section or link before the push
 git commit -am "Release v<version>" && git push
 ```
 
