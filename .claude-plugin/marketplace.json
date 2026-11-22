@@ -1,0 +1,5 @@
+{
+  "name": "harness-emphasis",
+  "owner": { "name": "Hong Tran" },
+  "plugins": [{ "name": "emphasis", "source": "./" }]
+}

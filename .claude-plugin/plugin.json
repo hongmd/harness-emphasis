@@ -1,0 +1,23 @@
+{
+  "name": "emphasis",
+  "version": "0.1.0",
+  "description": "Replies you can scan: [[Pills]] and known labels gain a glyph in the terminal, and the model is told how to write them. Display-only.",
+  "license": "MIT",
+  "author": {
+    "name": "Hong Tran"
+  },
+  "userConfig": {
+    "display": {
+      "type": "boolean",
+      "title": "Draw pills",
+      "default": true,
+      "description": "Replace [[Word]] pills and known labels with glyphs in the reply on screen. The stored message, ctrl+o, copied text and the model's view keep the original Markdown."
+    },
+    "guidance": {
+      "type": "boolean",
+      "title": "Teach the model",
+      "default": true,
+      "description": "Add a reply-style section to the system prompt telling the model which pills and labels to write. Off: you write the rules yourself."
+    }
+  }
+}

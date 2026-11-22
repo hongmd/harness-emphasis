@@ -1,0 +1,22 @@
+{
+  "name": "harness-emphasis",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Glyph pills and label icons for Claude Code replies, with the rules that teach the model to write them.",
+  "license": "MIT",
+  "type": "module",
+  "keywords": [
+    "claude-code-plugin",
+    "claude-code",
+    "markdown",
+    "terminal",
+    "pills"
+  ],
+  "scripts": {
+    "test": "claude plugin test .",
+    "validate": "claude plugin validate ."
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

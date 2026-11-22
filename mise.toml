@@ -1,0 +1,26 @@
+[tools]
+node = "22"
+"npm:typescript" = "5.6"
+
+# The engine writes `.claude-plugin/types/` and a tsconfig beside it the first time a session
+# loads this plugin (`claude --plugin-dir .` is enough), so run [tasks.types] once per machine.
+[tasks.types]
+description = "Lay the engine's type declarations into .claude-plugin/types/ by loading the plugin"
+run = "test -d .claude-plugin/types || claude --plugin-dir . -p 'loaded' >/dev/null"
+dir = "{{config_root}}"
+
+[tasks.typecheck]
+description = "Type-check the hooks module and src/ against the engine's declarations"
+run = "tsc -p ."
+
+[tasks.test]
+description = "Run the plugin's tests"
+run = "claude plugin test ."
+
+[tasks.validate]
+description = "Validate the manifest and the hooks module the way the engine will"
+run = "claude plugin validate ."
+
+[tasks.check]
+description = "Type-check, test and validate"
+depends = ["typecheck", "test", "validate"]

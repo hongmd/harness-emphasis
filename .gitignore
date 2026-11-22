@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+*.log
+# The engine lays this beside the plugin at every load; never committed.
+.claude-plugin/types/
