@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      # Not `mise run check`: typecheck needs the engine's type declarations, which only a
+      # logged-in session lays down. Tests and validation need no auth.
+      - run: mise run test
+      - run: mise run validate
+
+  release:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: version
+        run: echo "tag=v$(jq -r .version .claude-plugin/plugin.json)" >> "$GITHUB_OUTPUT"
+      - id: exists
+        run: echo "found=$(gh release view "${{ steps.version.outputs.tag }}" --json tagName >/dev/null 2>&1 && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - if: steps.exists.outputs.found == 'no'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          generate_release_notes: true

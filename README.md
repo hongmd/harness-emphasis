@@ -19,18 +19,18 @@ Claude Code draws an assistant reply through its own Markdown renderer. `Message
 Add this repository as a marketplace and install from it:
 
 ```sh
-/plugin install emphasis --marketplace <owner>/<repo>
+/plugin marketplace add hongmd/harness-emphasis
+/plugin install emphasis@harness-emphasis
 ```
-
-Replace `<owner>/<repo>` with the repository that holds this marketplace. For a local checkout, run `/plugin marketplace add /path/to/harness-emphasis` first, then `/plugin install emphasis@harness-emphasis`.
 
 From a shell:
 
 ```sh
-claude plugin install emphasis --marketplace <owner>/<repo>
+claude plugin marketplace add hongmd/harness-emphasis
+claude plugin install emphasis@harness-emphasis
 ```
 
-Then start a new session. To try it without installing:
+Then start a new session. For a local checkout, point the marketplace at the folder instead: `claude plugin marketplace add /path/to/harness-emphasis`. To try it without installing:
 
 ```sh
 claude --plugin-dir /path/to/harness-emphasis
@@ -90,7 +90,7 @@ To keep the drawing and write your own rules, turn `guidance` off.
 - The drawing replaces text on screen only. The stored message, ctrl+o, copied text and the model's view keep the original Markdown.
 - Color cannot be set; tone is carried by glyph and weight.
 - The no-break spaces inside a pill keep its words together on one line when the reply wraps.
-- Checked on macOS, Claude Code 2.1.330.
+- Checked on macOS; tests run in CI on Linux. Claude Code 2.1.330.
 
 ## Development
 
@@ -100,9 +100,13 @@ mise run test       # the rules, without Claude Code running
 mise run validate   # what the engine will refuse
 ```
 
-Claude Code writes its own type declarations into `.claude-plugin/types/` the first time a session loads this plugin; after that `mise run typecheck` checks the code against them.
+Claude Code writes its own type declarations into `.claude-plugin/types/` the first time a session loads this plugin; after that `mise run typecheck` checks the code against them. CI runs `mise run test` and `mise run validate` on every push and pull request — typecheck needs those declarations, which only a logged-in session lays down, so it stays a local check.
 
 The rules all live in `src/emphasis.ts` and are tested without Claude Code running. `src/guidance.ts` holds the prompt section and reads its word lists from the same tables.
+
+### Releases
+
+The version lives in `.claude-plugin/plugin.json` (and is mirrored in `package.json`). Bump both, push to `main`, and CI tags that commit `v<version>` and publishes a GitHub release with generated notes. A version that already has a release is left alone, so merging does not re-tag.
 
 ## Credits
 
