@@ -11,8 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-      # Not `mise run check`: typecheck needs the engine's type declarations, which only a
-      # logged-in session lays down. Tests and validation need no auth.
+      # Tests need the `claude` binary; it has no auth requirement for `plugin test`/`validate`.
+      # No ANTHROPIC_API_KEY here on purpose: with none, the CLI runs this repo's own code.
+      - run: npm i -g @anthropic-ai/claude-code
       - run: mise run test
       - run: mise run validate
 
@@ -26,14 +27,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - id: version
-        run: echo "tag=v$(jq -r .version .claude-plugin/plugin.json)" >> "$GITHUB_OUTPUT"
-      - id: exists
-        run: echo "found=$(gh release view "${{ steps.version.outputs.tag }}" --json tagName >/dev/null 2>&1 && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+      - name: Tag and release if this version is new
         env:
           GH_TOKEN: ${{ github.token }}
-      - if: steps.exists.outputs.found == 'no'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          generate_release_notes: true
+        run: |
+          tag="v$(jq -r .version .claude-plugin/plugin.json)"
+          if gh release view "$tag" --json tagName >/dev/null 2>&1; then
+            echo "$tag already released; nothing to do"
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" --generate-notes --title "$tag"
+          fi
