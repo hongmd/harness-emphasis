@@ -34,6 +34,15 @@ test("an unknown word still reads as a pill, with its tone's glyph", () => {
 	expect(pill("Deprecated")).toBe("`● Deprecated`");
 });
 
+test("only a word replies are told to write keeps detail; an accepted spelling must be the whole label", () => {
+	expect(pill("Failed: 3 tests")).toBe(`\`✗ Failed:${nbsp}3${nbsp}tests\``);
+	expect(pill("down for maintenance")).toBe(`\`✗ down${nbsp}for${nbsp}maintenance\``);
+	expect(toneOf("down for maintenance")).toBe("error");
+	expect(pill("ok, let's go")).toBe(`\`● ok,${nbsp}let's${nbsp}go\``);
+	expect(pill("Needs you")).toBe(`\`? Needs${nbsp}you\``);
+	expect(toneOf("NEEDS   YOU")).toBe("warning");
+});
+
 test("pills in prose are drawn, code and escaped markers are left as typed", () => {
 	expect(decorate("It [[Done]] now")).toBe("It `✓ Done` now");
 	expect(decorate("[[Done 6]] [[Failed 1]]")).toBe(`\`✓ Done${nbsp}6\` \`✗ Failed${nbsp}1\``);
@@ -52,8 +61,10 @@ test("fenced code keeps its pills, and a fence may open in one call and close in
 });
 
 test("a known heading and a known lead label gain a glyph; other text is untouched", () => {
-	expect(decorate("## Verdict")).toBe("## § Verdict");
+	expect(decorate("## Verdict")).toBe("## ☑ Verdict");
 	expect(decorate("## Anything else")).toBe("## Anything else");
+	expect(decorate("> **Cause:** quoted")).toBe("> **∆ Cause:** quoted");
+	expect(decorate("| **Cost:** 3 | **Risk:** x |")).toBe("| **$ Cost:** 3 | **Risk:** x |");
 	expect(decorate("**Cause:** the lock")).toBe("**∆ Cause:** the lock");
 	expect(decorate("- **Next:** ship it")).toBe("- **→ Next:** ship it");
 	expect(decorate("Already ✓ Done")).toBe("Already ✓ Done");

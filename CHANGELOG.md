@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.0] - 2026-11-22
+
+### Fixed
+
+- A lead label inside a blockquote (`> **Cause:** …`) or a table's first cell gains its glyph, where before only a plain line or list item did.
+- An accepted spelling no longer swallows the words after it. `[[down for maintenance]]` was drawn as the word "Down" and lost its prose; only a word replies are told to write takes detail after it (`[[Failed: 3 tests]]`), and an accepted spelling must be the whole label.
+- `toneOf` now reads the longest vocabulary word a label opens with, so `[[error: 3 files]]` keeps the error tone and `[[Needs you]]` keeps its own.
+
+### Changed
+
+- The reply-style rules are about 240 tokens shorter, and tell the model to put a pill late in its clause, so the raw wording reads cleanly while a reply streams.
+- Label glyphs no longer collide: Verdict `☑`, Rollback `↩`, Review `⌕`, Status `◈`, Evidence `◆`, Effect `⤳`, Why `※`, Limits `▽`, Scoreboard `▦`, Folder `▤`, Ideas `✧`. Pill glyphs: Foreign `◔`, Optional `◈`, Todo `□`, Draft `✎`. Every glyph is one cell wide.
+
+[0.4.0]: https://github.com/hongmd/harness-emphasis/compare/v0.3.0...v0.4.0
+
 ## [0.3.0] - 2026-11-22
 
 ### Changed

@@ -51,15 +51,15 @@ const PILL_ICONS: Record<string, string> = {
 	// Look here.
 	"needs you": ATTENTION, decision: ATTENTION, unverified: "▲", "at risk": "▲",
 	"in progress": "◐", partial: "◑", skipped: "↷", pending: "○", waiting: "○",
-	todo: "○", draft: "○", stale: "↺",
+	todo: "□", draft: "✎", stale: "↺",
 	// Consequences.
 	"costs money": "$", destructive: "⊗", irreversible: "‼",
 	// Kind of work.
 	brainstorm: "◇", investigate: "◎", preview: "⊙", implement: "▣", qualify: "◈",
 	// Ownership.
-	owned: "●", shared: "◍", foreign: "○",
+	owned: "●", shared: "◍", foreign: "◔",
 	// Context.
-	inferred: "◌", new: "⊕", changed: "∆", optional: "○",
+	inferred: "◌", new: "⊕", changed: "∆", optional: "◈",
 };
 
 /** The glyph a pill takes when its word has no entry: one per tone, so an unknown word still reads as a pill. */
@@ -82,12 +82,12 @@ const SYNONYMS: Record<string, string> = {
 
 /** The glyph a heading or a line's leading bold label takes from its word. */
 export const LABEL_ICONS: Record<string, string> = {
-	finding: "◉", result: "▶", status: "◈", evidence: "◉", cause: "∆", effect: "→",
-	fix: "✚", risk: "▲", limits: "▲", cost: "$", decision: ATTENTION, options: "◇",
-	plan: "▣", next: "→", why: ATTENTION, how: "◎", rule: "§", example: "◆",
-	checked: CHECK, verdict: "§", rollback: "↺", undo: "↺", review: "◉",
-	scoreboard: "▣", terminal: "▸", folder: "▣", file: "▪", branch: "⋔",
-	ideas: "◇", pills: "●", colors: "◍", icons: "★",
+	finding: "◉", result: "▶", status: "◈", evidence: "◆", cause: "∆", effect: "⤳",
+	fix: "✚", risk: "▲", limits: "▽", cost: "$", decision: ATTENTION, options: "◇",
+	plan: "▣", next: "→", why: "※", how: "◎", rule: "§", example: "❖",
+	checked: CHECK, verdict: "☑", rollback: "↩", undo: "↺", review: "⌕",
+	scoreboard: "▦", terminal: "▸", folder: "▤", file: "▪", branch: "⋔",
+	ideas: "✧", pills: "●", colors: "◍", icons: "★",
 };
 
 /** Lead-in words that name the action a pill calls for. With a colon they take a glyph anywhere in a line. */
@@ -97,6 +97,8 @@ export const ACTION_ICONS: Record<string, string> = {
 
 const KNOWN = [...new Set([...Object.values(TONE_WORDS).flat(), ...Object.keys(PILL_ICONS), ...Object.keys(SYNONYMS)])]
 	.sort((a, b) => b.length - a.length);
+/** The words replies are told to write; only these take detail after them. */
+const CORE = new Set(Object.values(VOCABULARY).flatMap((tone) => tone.core.map((w) => w.toLowerCase())));
 
 /** True when the text opens with a letter, so no glyph of its own stands there already. */
 const opensWithWord = (text: string) => /^\p{L}/u.test(text);
@@ -105,7 +107,11 @@ const opensWithWord = (text: string) => /^\p{L}/u.test(text);
 export function splitLabel(label: string): { glyph: string | undefined; word: string; key: string } {
 	const text = label.replace(/\s+/g, " ").trim();
 	const lower = text.toLowerCase();
-	const known = KNOWN.find((k) => lower === k || (lower.startsWith(k) && /[ :]/.test(lower[k.length] ?? "")));
+	// A core word may carry detail ("Failed: 3 tests"). An accepted spelling must be the whole label, so
+	// ordinary prose ("down for maintenance") is not read as one, and still reads as its own words.
+	const known = KNOWN.find(
+		(k) => lower === k || (CORE.has(k) && lower.startsWith(k) && /[ :]/.test(lower[k.length] ?? "")),
+	);
 	const canonical = known ? SYNONYMS[known] : undefined;
 	const key = (canonical ?? known ?? lower).toLowerCase();
 	const word = canonical && known ? canonical + text.slice(known.length) : text;
@@ -114,7 +120,10 @@ export function splitLabel(label: string): { glyph: string | undefined; word: st
 }
 
 export function toneOf(label: string): Tone {
-	const { key } = splitLabel(label);
+	// The longest vocabulary word the label opens with decides the tone, so "error: 3 files" reads as a
+	// failure and "Needs you" keeps its tone, even though neither is a whole label of the vocabulary.
+	const text = label.replace(/\s+/g, " ").trim().toLowerCase();
+	const key = KNOWN.find((k) => text === k || (text.startsWith(k) && /[ :]/.test(text[k.length] ?? ""))) ?? text;
 	for (const tone of ["danger", "error", "warning", "success", "mode", "owner"] as const) {
 		if (TONE_WORDS[tone].includes(key)) return tone;
 	}
@@ -123,8 +132,8 @@ export function toneOf(label: string): Tone {
 
 const FENCE = /^ {0,3}(`{3,}|~{3,})/;
 const HEADING = /^( {0,3}#{1,6}\s+)(.+)$/;
-// A line's leading bold label, after an optional list marker.
-const LEAD_LABEL = /^(\s*(?:[-*+]|\d+\.)?\s*\*\*)([^*`\n]{1,32})(\*\*)/;
+// A line's leading bold label, after an optional list marker, and inside a blockquote or a table cell.
+const LEAD_LABEL = /^(\s*(?:>\s*)*(?:\|+\s*)?(?:[-*+]|\d+\.)?\s*\*\*)([^*`\n]{1,32})(\*\*)/;
 // A [[pill]] of 1-32 characters, not escaped and not holding brackets or a newline.
 const PILL = /(?<!\\)\[\[([^[\]\n]{1,32})\]\]/g;
 const ACTION_LABEL = new RegExp(`(\\*\\*)(${Object.keys(ACTION_ICONS).join("|")})(:\\*\\*)`, "gi");
