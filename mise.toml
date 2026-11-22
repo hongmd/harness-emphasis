@@ -1,6 +1,6 @@
 [tools]
-node = "22"
-"npm:typescript" = "5.6"
+node = "26"
+"npm:typescript" = "7"
 
 # src/ imports nothing outside the standard library, so it type-checks without the engine's
 # declarations. hooks/register.ts imports claude-code and is only checked by `claude plugin validate`.
