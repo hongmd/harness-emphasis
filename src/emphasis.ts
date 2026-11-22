@@ -1,6 +1,6 @@
 // Display-only emphasis for Claude Code replies.
 //
-//   [[Blocked]]       becomes a bold step marker, glyph and color-free, chosen by its word
+//   [[Blocked]]       becomes an inline-code step marker, a glyph chosen by its word
 //   ## Verdict        a known heading keeps its word and gains a glyph
 //   **Cause:**        a known lead label gains a glyph at the start, and anywhere with a colon
 //
@@ -138,14 +138,18 @@ function withLabelIcon(label: string, action = false): string {
 	return glyph ? `${glyph} ${label}` : label;
 }
 
-/** One pill as Markdown: bold, with a glyph from its word and its words held together by no-break spaces. */
+/**
+ * One pill as Markdown: inline code, so it carries the renderer's own code color, with a glyph from
+ * its word and its words held together by no-break spaces. Bold alone disappears where the font's
+ * bold face is weak; the code span reads apart in every font.
+ */
 export function pill(label: string): string {
 	if (!label.trim()) return `[[${label}]]`;
 	const { glyph, word } = splitLabel(label);
 	const tone = toneOf(label);
 	const mark = glyph ?? TONE_GLYPHS[tone];
 	const text = word.replace(/ /g, "\u00a0");
-	return `**${mark} ${text}**`;
+	return `\`${mark} ${text}\``;
 }
 
 /** Apply emphasis to one line of prose, leaving inline code and escaped markers as typed. */

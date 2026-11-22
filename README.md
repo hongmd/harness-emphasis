@@ -4,19 +4,19 @@
 [![Release](https://img.shields.io/github/v/release/hongmd/harness-emphasis)](https://github.com/hongmd/harness-emphasis/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Replies you can scan. This Claude Code plugin turns `[[Done]]`, `[[Failed]]` and `[[Needs you]]` into bold glyphs, gives known headings and lead labels an icon from their word, and teaches the model to write them.
+Replies you can scan. This Claude Code plugin turns `[[Done]]`, `[[Failed]]` and `[[Needs you]]` into glyph pills drawn as inline code, gives known headings and lead labels an icon from their word, and teaches the model to write them.
 
 ```text
 ## Verdict            →   ## § Verdict
-[[Done]] 12/12       →   ✓ Done 12/12   (bold)
-**Cause:** the lock  →   ∆ Cause: the lock
+[[Done]] 12/12       →   `✓ Done 12/12`   (inline code)
+**Cause:** the lock  →   **∆ Cause:** the lock
 ```
 
 It changes only what is drawn. The stored message, ctrl+o, copied text and the model's own view of the conversation keep the original Markdown.
 
 ## Why glyphs and not colors
 
-Claude Code draws an assistant reply through its own Markdown renderer. `MessageDisplay` can replace the text shown while a reply streams, but that text is drawn as Markdown with control characters stripped, so a plugin cannot set a background color. Emphasis therefore carries tone with a one-cell glyph and bold weight, which works in every terminal with no extra font.
+Claude Code draws an assistant reply through its own Markdown renderer. `MessageDisplay` can replace the text shown while a reply streams, but that text is drawn as Markdown with control characters stripped, so a plugin cannot set a color of its own. Emphasis therefore carries tone with a one-cell glyph inside an inline code span, which takes the renderer's own code color and reads apart in every terminal with no extra font — bold alone disappears where a font's bold face is weak. Bold is still used for lead labels and headings, where the glyph is the thing to spot.
 
 ### Two hooks draw the same text
 
@@ -66,7 +66,7 @@ Some words carry their own glyph instead: Fixed `✚`, Observed `◉`, Live `▶
 
 - **Detail.** A known word may be followed by detail: `[[Passed 12/12]]`, `[[Failed: 3 tests]]`, `[[In progress 40%]]`.
 - **Synonyms.** Completed, Complete, OK and Finished display as Done. Fail, Failing and Error display as Failed. Pass displays as Passed, Waiting as Pending, and Needs review as Review.
-- **Unknown words.** Any other short label still reads as a bold pill with its tone's glyph, so nothing is left as raw brackets.
+- **Unknown words.** Any other short label still reads as a pill with its tone's glyph, so nothing is left as raw brackets.
 - **Length.** A label can be up to 32 characters. Longer ones are left as typed.
 
 ## Labels
@@ -102,7 +102,8 @@ To keep the drawing and write your own rules, turn `guidance` off.
 ## Limits
 
 - The drawing replaces text on screen only. The stored message, ctrl+o, copied text and the model's view keep the original Markdown.
-- Color cannot be set; tone is carried by glyph and weight.
+- Color cannot be set directly; a pill takes the renderer's inline-code color, and a label keeps bold. A terminal theme that draws code spans in the body color gives the glyph alone.
+- A pill is inline code, so a terminal's mouse copy or `/copy` of the reply carries its backticks. The stored message and ctrl+o do not.
 - The no-break spaces inside a pill keep its words together on one line when the reply wraps.
 - Checked on macOS; tests run in CI on Linux. Claude Code 2.1.330.
 

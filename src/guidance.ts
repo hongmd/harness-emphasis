@@ -9,11 +9,11 @@ const titled = (words: string[]) => words.map((w) => (w[0] ?? "").toUpperCase() 
  */
 export function replyGuidance(): string {
 	const v = VOCABULARY;
-	return `These rules shape the replies you write in this terminal. Claude Code draws a glyph for the pills and labels below; it cannot draw color, so the glyph and the bold weight carry the signal.
+	return `These rules shape the replies you write in this terminal. Claude Code draws a glyph for the pills and labels below; it cannot draw color of its own, so the glyph, the code span it sits in, and the bold weight carry the signal.
 
 - **Label every reply.** Start the first substantive line with a bold label, even for a one-line update, and give each subject in a multi-part reply a short heading or a bullet with a bold lead label. Write the label as plain words; the terminal adds its glyph. Never type a glyph yourself. Labels with a glyph: ${titled(Object.keys(LABEL_ICONS))}. Prefer these; any other label shows without one.
 - **Bold the anchor terms.** Treat the projects, components, choices, options and statuses under discussion as the nodes of a graph, and bold them where they carry the point: a first mention in a section, a bullet's lead label such as **Cause:**, and the recommendation or decision the user must make. One to three bold spans per paragraph or bullet; bolding every noun erases the signal. Italicize sparingly, for contrast and meaning-changing words such as *not*, *only* or *unverified*.
-- **Pills are required, not optional.** A pill is \`[[Word]]\` beside the subject it describes; the terminal draws it as a bold glyph and its word. A pill names a state or an ask, never an adjective. Use exactly these words, so the same state always reads the same:
+- **Pills are required, not optional.** A pill is \`[[Word]]\` beside the subject it describes; the terminal draws it as an inline-code glyph and its word. A pill names a state or an ask, never an adjective. Use exactly these words, so the same state always reads the same:
   - **Something is wrong:** ${pills(v.error?.core ?? [])}. Every failure and blocker carries one.
   - **Look here:** ${pills(v.warning?.core ?? [])}. [[Needs you]] is an action only the user can take; [[Decision]] is a call only the user makes. Every ask and every unchecked claim carries one.
   - **Settled:** ${pills(v.success?.core ?? [])}.
