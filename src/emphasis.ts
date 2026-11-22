@@ -182,7 +182,7 @@ function decorateLine(line: string): string {
 		.join("");
 }
 
-/** Apply emphasis to Markdown, leaving fenced code and headings' own pills alone. `ctx` carries a fence across calls. */
+/** Apply emphasis to Markdown, leaving fenced code alone. `ctx` carries a fence across calls. */
 export function decorate(markdown: string, ctx: { fence?: string } = {}): string {
 	return markdown
 		.split("\n")
@@ -197,8 +197,11 @@ export function decorate(markdown: string, ctx: { fence?: string } = {}): string
 				ctx.fence = open;
 				return line;
 			}
+			// A pill written into a heading is still a pill: leaving it as typed showed the raw
+			// brackets on screen, which is the one thing the plugin exists to prevent. The heading's
+			// own icon is taken from the heading text without them.
 			const heading = HEADING.exec(line);
-			if (heading) return heading[1] + withLabelIcon(heading[2] as string);
+			if (heading) return heading[1] + withLabelIcon(decorateLine(heading[2] as string));
 			return decorateLine(line);
 		})
 		.join("\n");

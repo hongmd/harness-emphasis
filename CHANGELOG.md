@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.1] - 2026-11-22
+
+### Fixed
+
+- A pill written into a heading is drawn. Headings were passed through untouched, so `## 3. GitHub — fine — [[Observed]]` showed the raw brackets — the one thing the plugin exists to prevent. The heading's own icon is still taken from its text without the pill.
+
+### Changed
+
+- The rules told the model never to put a pill in a heading, which is why the shape was never exercised. A heading may carry one now.
+
+[0.5.1]: https://github.com/hongmd/harness-emphasis/compare/v0.5.0...v0.5.1
+
 ## [0.5.0] - 2026-11-22
 
 ### Changed

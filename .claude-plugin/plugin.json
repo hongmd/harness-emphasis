@@ -1,6 +1,6 @@
 {
   "name": "emphasis",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Replies you can scan: [[Pills]] and known labels gain a glyph in the terminal, and the model is told how to write them. Display-only.",
   "license": "MIT",
   "author": {

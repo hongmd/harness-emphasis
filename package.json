@@ -1,6 +1,6 @@
 {
   "name": "harness-emphasis",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "description": "Glyph pills and label icons for Claude Code replies, with the rules that teach the model to write them.",
   "license": "MIT",

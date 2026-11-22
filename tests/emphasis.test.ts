@@ -60,6 +60,11 @@ test("fenced code keeps its pills, and a fence may open in one call and close in
 	expect(decorate("[[Done]]", ctx)).toBe("`[✓ Done]`");
 });
 
+test("a pill written into a heading is drawn too", () => {
+	expect(decorate("## 3. GitHub — fine — [[Observed]]")).toBe("## 3. GitHub — fine — `[◉ Observed]`");
+	expect(decorate("## Notes [[Done]] after")).toBe("## Notes `[✓ Done]` after");
+});
+
 test("a known heading and a known lead label gain a glyph; other text is untouched", () => {
 	expect(decorate("## Verdict")).toBe("## ⇒ Verdict");
 	expect(decorate("## Anything else")).toBe("## Anything else");
