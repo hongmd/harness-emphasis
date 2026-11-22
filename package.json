@@ -15,8 +15,5 @@
   "scripts": {
     "test": "claude plugin test .",
     "validate": "claude plugin validate ."
-  },
-  "devDependencies": {
-    "typescript": "^5.6.0"
   }
 }

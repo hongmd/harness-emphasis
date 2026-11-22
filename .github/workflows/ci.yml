@@ -14,6 +14,7 @@ jobs:
       # Tests need the `claude` binary; it has no auth requirement for `plugin test`/`validate`.
       # No ANTHROPIC_API_KEY here on purpose: with none, the CLI runs this repo's own code.
       - run: npm i -g @anthropic-ai/claude-code
+      - run: mise run typecheck
       - run: mise run test
       - run: mise run validate
 

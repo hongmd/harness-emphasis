@@ -40,7 +40,7 @@ const CHECK = "✓";
 const CROSS = "✗";
 const ATTENTION = "?";
 /** The glyph each known pill word carries. A word without one takes its tone's glyph. */
-export const PILL_ICONS: Record<string, string> = {
+const PILL_ICONS: Record<string, string> = {
 	// Settled.
 	done: CHECK, passed: CHECK, pass: CHECK, complete: CHECK, completed: CHECK, ok: CHECK,
 	verified: CHECK, ready: CHECK, healthy: CHECK, safe: CHECK, approved: CHECK, merged: CHECK,
@@ -132,7 +132,7 @@ const ACTION_LABEL = new RegExp(`(\\*\\*)(${Object.keys(ACTION_ICONS).join("|")}
 const CODE_SPAN = /(`+[^`]*?`+)/g;
 
 /** Prefix a known label with its glyph, unless the text opens with a glyph already. */
-export function withLabelIcon(label: string, action = false): string {
+function withLabelIcon(label: string, action = false): string {
 	const word = label.replace(/[:\s]+$/, "").trim().toLowerCase();
 	const glyph = !opensWithWord(label) ? undefined : (LABEL_ICONS[word] ?? (action ? ACTION_ICONS[word] : undefined));
 	return glyph ? `${glyph} ${label}` : label;
@@ -144,20 +144,24 @@ export function pill(label: string): string {
 	const { glyph, word } = splitLabel(label);
 	const tone = toneOf(label);
 	const mark = glyph ?? TONE_GLYPHS[tone];
-	const text = word.replace(/ /g, " ");
+	const text = word.replace(/ /g, "\u00a0");
 	return `**${mark} ${text}**`;
 }
 
 /** Apply emphasis to one line of prose, leaving inline code and escaped markers as typed. */
 function decorateLine(line: string): string {
-	let result = line.replace(LEAD_LABEL, (_, before: string, label: string, after: string) => before + withLabelIcon(label) + after);
-	result = result.replace(ACTION_LABEL, (match, before: string, word: string, after: string) => {
-		const glyph = ACTION_ICONS[word.toLowerCase()];
-		return glyph ? `${before}${glyph} ${word}${after}` : match;
-	});
-	return result
+	// Split on inline code first: an icon must never land inside a backtick span.
+	return line
 		.split(CODE_SPAN)
-		.map((part, index) => (index % 2 === 1 ? part : part.replace(PILL, (_, label: string) => pill(label))))
+		.map((part, index) => {
+			if (index % 2 === 1) return part;
+			let result = part.replace(PILL, (_, label: string) => pill(label));
+			result = result.replace(ACTION_LABEL, (match, before: string, word: string, after: string) => {
+				const glyph = ACTION_ICONS[word.toLowerCase()];
+				return glyph ? `${before}${glyph} ${word}${after}` : match;
+			});
+			return result.replace(LEAD_LABEL, (_, before: string, label: string, after: string) => before + withLabelIcon(label) + after);
+		})
 		.join("");
 }
 

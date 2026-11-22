@@ -2,17 +2,11 @@
 node = "22"
 "npm:typescript" = "5.6"
 
-# The engine writes `.claude-plugin/types/` and a tsconfig beside it the first time a session
-# loads this plugin (`claude --plugin-dir .` is enough), so run [tasks.types] once per machine.
-[tasks.types]
-description = "Lay the engine's type declarations into .claude-plugin/types/ by loading the plugin"
-run = "test -d .claude-plugin/types || timeout 120 claude --plugin-dir . -p 'loaded' >/dev/null 2>&1 || true"
-dir = "{{config_root}}"
-
+# src/ imports nothing outside the standard library, so it type-checks without the engine's
+# declarations. hooks/register.ts imports claude-code and is only checked by `claude plugin validate`.
 [tasks.typecheck]
-description = "Type-check the hooks module and src/ against the engine's declarations"
-run = "tsc -p ."
-depends = ["types"]
+description = "Type-check src/ on its own, with no config file"
+run = "tsc --noEmit --strict --target es2022 --module esnext src/*.ts"
 
 [tasks.test]
 description = "Run the plugin's tests"

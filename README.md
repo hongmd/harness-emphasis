@@ -1,5 +1,9 @@
 # Emphasis
 
+[![CI](https://github.com/hongmd/harness-emphasis/actions/workflows/ci.yml/badge.svg)](https://github.com/hongmd/harness-emphasis/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/hongmd/harness-emphasis)](https://github.com/hongmd/harness-emphasis/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Replies you can scan. This Claude Code plugin turns `[[Done]]`, `[[Failed]]` and `[[Needs you]]` into bold glyphs, gives known headings and lead labels an icon from their word, and teaches the model to write them.
 
 ```text
@@ -40,15 +44,21 @@ claude --plugin-dir /path/to/harness-emphasis
 
 Write `[[Word]]` beside the thing it describes. The word chooses the glyph.
 
-| Glyph by default | Meaning | Words |
+| Glyph | Meaning | Words |
 |---|---|---|
 | `✓` | Settled | Done, Passed, Observed, Fixed, Live, Recommended, Keep |
 | `✗` | Something is wrong | Failed, Blocked, Broken, Unsafe |
 | `?` | Look here | Needs you, Decision, Unverified, Partial, Skipped, In progress, Pending, At risk |
 | `‼` | Consequences | Costs money, Destructive, Irreversible |
 | `◇` | Kind of work | Brainstorm, Investigate, Preview, Implement, Qualify |
-| `●` | Ownership | Owned, Shared, Foreign |
-| `●` | Context | Inferred, New, Changed, Optional |
+| `●` | Ownership, owned | Owned |
+| `◍` | Ownership, shared | Shared |
+| `○` | Ownership, foreign | Foreign, Optional |
+| `◌` | Context, inferred | Inferred |
+| `⊕` | Context, new | New |
+| `∆` | Context, changed | Changed |
+
+Some words carry their own glyph instead: Fixed `✚`, Observed `◉`, Live `▶`, Recommended `★`, Rejected `⊘`, Blocked `■`, Unverified `▲`, In progress `◐`. The full table is `PILL_ICONS` in `src/emphasis.ts`.
 
 - **Detail.** A known word may be followed by detail: `[[Passed 12/12]]`, `[[Failed: 3 tests]]`, `[[In progress 40%]]`.
 - **Synonyms.** Completed, Complete, OK and Finished display as Done. Fail, Failing and Error display as Failed. Pass displays as Passed, Waiting as Pending, and Needs review as Review.
@@ -96,17 +106,24 @@ To keep the drawing and write your own rules, turn `guidance` off.
 
 ```sh
 mise install
+mise run check      # type-check, test and validate, as CI does
 mise run test       # the rules, without Claude Code running
 mise run validate   # what the engine will refuse
 ```
 
-Claude Code writes its own type declarations into `.claude-plugin/types/` the first time a session loads this plugin; after that `mise run typecheck` checks the code against them. CI runs `mise run test` and `mise run validate` on every push and pull request — typecheck needs those declarations, which only a logged-in session lays down, so it stays a local check.
+`src/` imports nothing outside the standard library, so `mise run typecheck` checks it with no config file. `hooks/register.ts` imports the engine's types and is checked by `mise run validate` instead. CI runs the same typecheck, test and validate steps on every push and pull request.
 
 The rules all live in `src/emphasis.ts` and are tested without Claude Code running. `src/guidance.ts` holds the prompt section and reads its word lists from the same tables.
 
 ### Releases
 
 The version lives in `.claude-plugin/plugin.json` (and is mirrored in `package.json`). Bump both, push to `main`, and CI tags that commit `v<version>` and publishes a GitHub release with generated notes. A version that already has a release is left alone, so merging does not re-tag.
+
+```sh
+npm version --no-git-tag-version patch   # or minor / major
+jq -r .version package.json              # copy it into .claude-plugin/plugin.json
+git commit -am "Release v<version>" && git push
+```
 
 ## Credits
 

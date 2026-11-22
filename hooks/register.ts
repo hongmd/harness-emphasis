@@ -5,10 +5,17 @@ import { replyGuidance } from "../src/guidance";
 
 export const register: Register = (on, options) => {
 	const streams = new Map<string, Emphasizer>();
+	let lastTurn = "";
 
 	// A pill or a fence can be split across flushes, so one message keeps one state until its final flush.
 	on("classic.MessageDisplay", (_$, e) => {
 		if (options.display === false) return {};
+
+		// An interrupted reply never gets its final flush, so a new turn drops every state the old one left.
+		if (e.turn_id !== lastTurn) {
+			streams.clear();
+			lastTurn = e.turn_id;
+		}
 
 		let stream = streams.get(e.message_id);
 		if (stream === undefined) {
@@ -19,11 +26,6 @@ export const register: Register = (on, options) => {
 		if (e.final) streams.delete(e.message_id);
 
 		return { displayContent };
-	});
-
-	// A stream whose final flush never came (an interrupted reply) is dropped here, so the map stays small.
-	on("turn.complete", () => {
-		streams.clear();
 	});
 
 	// The rules travel with the renderer: a session that is not drawing pills is not told to write them.

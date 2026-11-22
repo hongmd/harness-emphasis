@@ -61,6 +61,11 @@ test("a known heading and a known lead label gain a glyph; other text is untouch
 	expect(decorate("Then **Check:** the log")).toBe("Then **✓ Check:** the log");
 });
 
+test("an icon never lands inside inline code", () => {
+	expect(decorate("Write `**Check:** value` to mark it.")).toBe("Write `**Check:** value` to mark it.");
+	expect(decorate("After `code` **Check:** the log")).toBe("After `code` **✓ Check:** the log");
+});
+
 test("one message's flushes join a pill split across them", () => {
 	const stream = new Emphasizer();
 	expect(stream.push("Status: [[Done", false)).toBe("");

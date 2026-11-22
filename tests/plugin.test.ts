@@ -20,6 +20,13 @@ test("two messages streaming at once keep their own state", async $ => {
 	expect((await $.classic.MessageDisplay(flush("a", 1, "]] end", true))).displayContent).toBe("**✓ Done** end");
 });
 
+test("a new turn drops a state the interrupted reply left", async $ => {
+	const aborted = await $.classic.MessageDisplay({ ...flush("m1", 0, "left [[Fail", false), turn_id: "t1" });
+	expect(aborted.displayContent).toBe("");
+	const next = await $.classic.MessageDisplay({ ...flush("m1", 0, "ed]] next\n", false), turn_id: "t2" });
+	expect(next.displayContent).toBe("ed]] next\n");
+});
+
 test("the rules come with the renderer, and only where something draws", async ($, on) => {
 	on("prompt.compose", () => ({ sections: [{ id: "intro", text: "hi", scope: "session" }] }));
 
