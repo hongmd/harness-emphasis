@@ -8,17 +8,17 @@ const compose = (surfaces: ("terminal" | "desktop" | "vscode" | "mobile")[]) =>
 
 test("the plugin draws a reply's pills without touching the stored row", async $ => {
 	const first = await $.classic.MessageDisplay(flush("m1", 0, "## Verdict\n[[Done]] the split [`x`]\n"));
-	expect(first.displayContent).toBe("## ⇒ Verdict\n`✓ Done` the split [`x`]\n");
+	expect(first.displayContent).toBe("## ⇒ Verdict\n`[✓ Done]` the split [`x`]\n");
 	const second = await $.classic.MessageDisplay(flush("m1", 1, "[[Failed: 2]] left", true));
-	expect(second.displayContent).toBe(`\`✗ Failed:${nbsp}2\` left`);
+	expect(second.displayContent).toBe(`\`[✗ Failed:${nbsp}2]\` left`);
 });
 
 test("two messages streaming at once keep their own state", async $ => {
 	const a = await $.classic.MessageDisplay(flush("a", 0, "[[Done", false));
 	const b = await $.classic.MessageDisplay(flush("b", 0, "[[Needs you]]\n", false));
 	expect(a.displayContent).toBe("");
-	expect(b.displayContent).toBe(`\`? Needs${nbsp}you\`\n`);
-	expect((await $.classic.MessageDisplay(flush("a", 1, "]] end", true))).displayContent).toBe("`✓ Done` end");
+	expect(b.displayContent).toBe(`\`[? Needs${nbsp}you]\`\n`);
+	expect((await $.classic.MessageDisplay(flush("a", 1, "]] end", true))).displayContent).toBe("`[✓ Done]` end");
 });
 
 test("a new turn drops a state the interrupted reply left", async $ => {
@@ -47,10 +47,10 @@ const rowText = (on: Parameters<TestBody>[1]) => {
 
 test("the transcript's own row is drawn too, so the fullscreen renderer shows it", async ($, on) => {
 	const row = rowText(on);
-	expect(await row($, REPLY)).toBe("## ⇒ Verdict\n`✓ Done` the split [`x`]\n");
+	expect(await row($, REPLY)).toBe("## ⇒ Verdict\n`[✓ Done]` the split [`x`]\n");
 
 	// A row MessageDisplay already drew must not gain a second glyph.
-	expect(await row($, { ...REPLY, text: "`✓ Done` the split [`x`]\n" })).toBe("`✓ Done` the split [`x`]\n");
+	expect(await row($, { ...REPLY, text: "`[✓ Done]` the split [`x`]\n" })).toBe("`[✓ Done]` the split [`x`]\n");
 });
 
 test("a summary row is left as stored", async ($, on) => {
@@ -73,7 +73,7 @@ test("guidance off keeps the drawing and drops the rules", { options: { guidance
 	on("prompt.compose", () => ({ sections: [] }));
 	const composed = await $.prompt.compose(compose(["terminal"]));
 	expect(composed.sections.map(s => s.id)).not.toContain("emphasis:reply_style");
-	expect((await $.classic.MessageDisplay(flush("m1", 0, "[[Done]]", true))).displayContent).toBe("`✓ Done`");
+	expect((await $.classic.MessageDisplay(flush("m1", 0, "[[Done]]", true))).displayContent).toBe("`[✓ Done]`");
 });
 
 test("display off drops the drawing and the rules", { options: { display: false } }, async ($, on) => {

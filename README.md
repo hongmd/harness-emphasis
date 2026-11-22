@@ -8,7 +8,7 @@ Replies you can scan. This Claude Code plugin turns `[[Done]]`, `[[Failed]]` and
 
 ```text
 ## Verdict            →   ## ⇒ Verdict
-[[Done]] 12/12       →   `✓ Done 12/12`   (inline code)
+[[Done]] 12/12       →   `[✓ Done 12/12]`   (inline code)
 **Cause:** the lock  →   **∆ Cause:** the lock
 ```
 

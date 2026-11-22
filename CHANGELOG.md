@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0] - 2026-11-22
+
+### Changed
+
+- A pill is drawn inside square brackets — `[✓ Passed]` — so it reads apart from a lead label that carries the same glyph ("✓ Checked:"). The glyph alone was ambiguous on a line holding both, and on a scoreboard of bare counts. The brackets are ASCII, so they are in every monospace font and add no new width risk.
+
+[0.5.0]: https://github.com/hongmd/harness-emphasis/compare/v0.4.1...v0.5.0
+
 ## [0.4.1] - 2026-11-22
 
 ### Fixed

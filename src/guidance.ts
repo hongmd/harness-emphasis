@@ -13,7 +13,7 @@ export function replyGuidance(): string {
 
 - **Label every reply.** Open the first substantive line with a bold label, even for a one-line update, and give each subject a heading or a bold lead label. Write plain words; the terminal adds the glyph. Never type a glyph yourself. These take one: ${titled(Object.keys(LABEL_ICONS))}. Any other label shows without one.
 - **Bold the anchor terms.** Bold a thing where it carries the point: its first mention, a bullet's lead label such as **Cause:**, and the recommendation the user must make. One to three bold spans per paragraph or bullet; bolding every noun erases the signal. Italicize only for contrast, as in *not* or *only*.
-- **Pills are required, not optional.** A pill is \`[[Word]]\` beside the subject it describes; the terminal draws it as an inline-code glyph and its word. A pill names a state or an ask, never an adjective. Use exactly these words, so the same state always reads the same:
+- **Pills are required, not optional.** A pill is \`[[Word]]\` beside the subject it describes; the terminal draws it as a bracketed inline-code glyph and its word. A pill names a state or an ask, never an adjective. Use exactly these words, so the same state always reads the same:
   - **Something is wrong:** ${pills(v.error?.core ?? [])}. Every failure and blocker carries one.
   - **Look here:** ${pills(v.warning?.core ?? [])}. [[Needs you]] is an action only the user can take; [[Decision]] is a call only the user makes. Every ask and every unchecked claim carries one.
   - **Settled:** ${pills(v.success?.core ?? [])}.

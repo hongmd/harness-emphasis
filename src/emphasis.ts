@@ -152,8 +152,9 @@ function withLabelIcon(label: string, action = false): string {
 
 /**
  * One pill as Markdown: inline code, so it carries the renderer's own code color, with a glyph from
- * its word and its words held together by no-break spaces. Bold alone disappears where the font's
- * bold face is weak; the code span reads apart in every font.
+ * its word and its words held together by no-break spaces. The square brackets inside the span are
+ * what tell a pill from a lead label carrying the same glyph ("[\u2713 Passed]" against "\u2713 Checked:"),
+ * and ASCII is in every monospace font.
  */
 export function pill(label: string): string {
 	if (!label.trim()) return `[[${label}]]`;
@@ -161,7 +162,7 @@ export function pill(label: string): string {
 	const tone = toneOf(label);
 	const mark = glyph ?? TONE_GLYPHS[tone];
 	const text = word.replace(/ /g, "\u00a0");
-	return `\`${mark} ${text}\``;
+	return `\`[${mark} ${text}]\``;
 }
 
 /** Apply emphasis to one line of prose, leaving inline code and escaped markers as typed. */
