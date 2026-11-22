@@ -61,12 +61,14 @@ test("fenced code keeps its pills, and a fence may open in one call and close in
 });
 
 test("a known heading and a known lead label gain a glyph; other text is untouched", () => {
-	expect(decorate("## Verdict")).toBe("## ☑ Verdict");
+	expect(decorate("## Verdict")).toBe("## ⇒ Verdict");
 	expect(decorate("## Anything else")).toBe("## Anything else");
 	expect(decorate("> **Cause:** quoted")).toBe("> **∆ Cause:** quoted");
 	expect(decorate("| **Cost:** 3 | **Risk:** x |")).toBe("| **$ Cost:** 3 | **Risk:** x |");
 	expect(decorate("**Cause:** the lock")).toBe("**∆ Cause:** the lock");
 	expect(decorate("- **Next:** ship it")).toBe("- **→ Next:** ship it");
+	expect(decorate("- **Check** the log")).toBe("- **✓ Check** the log");
+	expect(decorate("| **Check** | the log |")).toBe("| **✓ Check** | the log |");
 	expect(decorate("Already ✓ Done")).toBe("Already ✓ Done");
 	expect(decorate("The **Cause:** inline")).toBe("The **Cause:** inline");
 	expect(decorate("Then **Check:** the log")).toBe("Then **✓ Check:** the log");

@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.1] - 2026-11-22
+
+### Fixed
+
+- Every glyph is now one the plainest monospace font carries. Nine of them (`✚`, `★`, `◐`, `◑`, `↷`, `✎`, `↺`, `▣`, `◍`) were absent from JetBrains Mono Nerd Font, and four more added in 0.4.0 (`☑`, `⌕`, `※`, `▦`) were absent too, so they fell back to another font and could be drawn two cells wide — which shifts a whole reply when it wraps. The set is now limited to the arrow, geometric-shape and math-operator blocks, checked against the font's own character map rather than guessed.
+- A lead label with no colon takes the action words, so `- **Check** the log` keeps the check the two-colon form already had.
+- `TONE_GLYPHS` had a duplicate `neutral` key; removed.
+
+[0.4.1]: https://github.com/hongmd/harness-emphasis/compare/v0.4.0...v0.4.1
+
 ## [0.4.0] - 2026-11-22
 
 ### Fixed

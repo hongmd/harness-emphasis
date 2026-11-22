@@ -35,7 +35,8 @@ const TONE_WORDS = Object.fromEntries(
 	Object.entries(VOCABULARY).map(([tone, words]) => [tone, [...words.core, ...words.also].map((w) => w.toLowerCase())]),
 ) as Record<Exclude<Tone, "neutral">, string[]>;
 
-// Every glyph here is one cell wide and no emoji, so no font beyond the terminal's own is needed.
+// Every glyph here is one cell wide, drawn from the blocks a monospace font is expected to carry
+// (arrows, geometric shapes, math operators), and no emoji — so no font beyond the terminal's own.
 const CHECK = "✓";
 const CROSS = "✗";
 const ATTENTION = "?";
@@ -44,20 +45,20 @@ const PILL_ICONS: Record<string, string> = {
 	// Settled.
 	done: CHECK, passed: CHECK, pass: CHECK, complete: CHECK, completed: CHECK, ok: CHECK,
 	verified: CHECK, ready: CHECK, healthy: CHECK, safe: CHECK, approved: CHECK, merged: CHECK,
-	fixed: "✚", observed: "◉", review: "◉", live: "▶", shipped: "▶", recommended: "★", keep: "★",
+	fixed: "⊞", observed: "◉", review: "◉", live: "▶", shipped: "▶", recommended: "⋆", keep: "⋆",
 	// Something is wrong.
 	failed: CROSS, fail: CROSS, failing: CROSS, error: CROSS,
 	rejected: "⊘", blocked: "■", broken: "⊗", unsafe: "‼", down: "↓",
 	// Look here.
 	"needs you": ATTENTION, decision: ATTENTION, unverified: "▲", "at risk": "▲",
-	"in progress": "◐", partial: "◑", skipped: "↷", pending: "○", waiting: "○",
-	todo: "□", draft: "✎", stale: "↺",
+	"in progress": "◕", partial: "◔", skipped: "↦", pending: "○", waiting: "○",
+	todo: "□", draft: "▫", stale: "↭",
 	// Consequences.
 	"costs money": "$", destructive: "⊗", irreversible: "‼",
 	// Kind of work.
-	brainstorm: "◇", investigate: "◎", preview: "⊙", implement: "▣", qualify: "◈",
+	brainstorm: "◇", investigate: "◎", preview: "⊙", implement: "⊟", qualify: "◈",
 	// Ownership.
-	owned: "●", shared: "◍", foreign: "◔",
+	owned: "●", shared: "◩", foreign: "◔",
 	// Context.
 	inferred: "◌", new: "⊕", changed: "∆", optional: "◈",
 };
@@ -82,17 +83,17 @@ const SYNONYMS: Record<string, string> = {
 
 /** The glyph a heading or a line's leading bold label takes from its word. */
 export const LABEL_ICONS: Record<string, string> = {
-	finding: "◉", result: "▶", status: "◈", evidence: "◆", cause: "∆", effect: "⤳",
-	fix: "✚", risk: "▲", limits: "▽", cost: "$", decision: ATTENTION, options: "◇",
-	plan: "▣", next: "→", why: "※", how: "◎", rule: "§", example: "❖",
-	checked: CHECK, verdict: "☑", rollback: "↩", undo: "↺", review: "⌕",
-	scoreboard: "▦", terminal: "▸", folder: "▤", file: "▪", branch: "⋔",
-	ideas: "✧", pills: "●", colors: "◍", icons: "★",
+	finding: "◉", result: "▶", status: "◈", evidence: "◆", cause: "∆", effect: "↦",
+	fix: "⊞", risk: "▲", limits: "▽", cost: "$", decision: ATTENTION, options: "◇",
+	plan: "⊟", next: "→", why: "∵", how: "◎", rule: "§", example: "✶",
+	checked: CHECK, verdict: "⇒", rollback: "↩", undo: "↪", review: "⌫",
+	scoreboard: "⊡", terminal: "▸", folder: "❱", file: "▪", branch: "⋎",
+	ideas: "◊", pills: "●", colors: "◩", icons: "⋆",
 };
 
 /** Lead-in words that name the action a pill calls for. With a colon they take a glyph anywhere in a line. */
 export const ACTION_ICONS: Record<string, string> = {
-	check: CHECK, do: "→", next: "→", unblock: "◇", left: "◐", run: "▶", guard: "▲", undo: "↺", see: "◉",
+	check: CHECK, do: "→", next: "→", unblock: "◇", left: "◕", run: "▶", guard: "▲", undo: "↪", see: "◉",
 };
 
 const KNOWN = [...new Set([...Object.values(TONE_WORDS).flat(), ...Object.keys(PILL_ICONS), ...Object.keys(SYNONYMS)])]
@@ -143,7 +144,9 @@ const CODE_SPAN = /(`+[^`]*?`+)/g;
 /** Prefix a known label with its glyph, unless the text opens with a glyph already. */
 function withLabelIcon(label: string, action = false): string {
 	const word = label.replace(/[:\s]+$/, "").trim().toLowerCase();
-	const glyph = !opensWithWord(label) ? undefined : (LABEL_ICONS[word] ?? (action ? ACTION_ICONS[word] : undefined));
+	// A lead label at the start of a line falls back to the action words, so "- **Check** is the log"
+	// keeps the key its two-colon form has.
+	const glyph = !opensWithWord(label) ? undefined : (LABEL_ICONS[word] ?? ACTION_ICONS[word] ?? (action ? ACTION_ICONS[word] : undefined));
 	return glyph ? `${glyph} ${label}` : label;
 }
 

@@ -7,7 +7,7 @@
 Replies you can scan. This Claude Code plugin turns `[[Done]]`, `[[Failed]]` and `[[Needs you]]` into glyph pills drawn as inline code, gives known headings and lead labels an icon from their word, and teaches the model to write them.
 
 ```text
-## Verdict            →   ## ☑ Verdict
+## Verdict            →   ## ⇒ Verdict
 [[Done]] 12/12       →   `✓ Done 12/12`   (inline code)
 **Cause:** the lock  →   **∆ Cause:** the lock
 ```
@@ -16,7 +16,9 @@ It changes only what is drawn. The stored message, ctrl+o, copied text and the m
 
 ## Why glyphs and not colors
 
-Claude Code draws an assistant reply through its own Markdown renderer. `MessageDisplay` can replace the text shown while a reply streams, but that text is drawn as Markdown with control characters stripped, so a plugin cannot set a color of its own. Emphasis therefore carries tone with a one-cell glyph inside an inline code span, which takes the renderer's own code color and reads apart in every terminal with no extra font — bold alone disappears where a font's bold face is weak. Bold is still used for lead labels and headings, where the glyph is the thing to spot.
+Claude Code draws an assistant reply through its own Markdown renderer. `MessageDisplay` can replace the text shown while a reply streams, but that text is drawn as Markdown with control characters stripped, so a plugin cannot set a color of its own. Emphasis therefore carries tone with a one-cell glyph inside an inline code span, which takes the renderer's own code color and reads apart in any terminal — bold alone disappears where a font's bold face is weak. Bold is still used for lead labels and headings, where the glyph is the thing to spot.
+
+Every glyph comes from the arrows, geometric shapes and math operators even the plainest monospace font carries. The blocks outside those (`☑`, `※`, `✎`, `⤳`) were checked against JetBrains Mono Nerd Font and are absent, so they fall back to another font and may be two cells wide — which shifts a whole reply when it wraps. If a glyph still draws as a box, your font and its fallbacks lack it; the word is still readable beside it.
 
 ### Two hooks draw the same text
 
@@ -56,14 +58,14 @@ Write `[[Word]]` beside the thing it describes. The word chooses the glyph.
 | `‼` | Consequences | Costs money, Destructive, Irreversible |
 | `◇` | Kind of work | Brainstorm, Investigate, Preview, Implement, Qualify |
 | `●` | Ownership, owned | Owned |
-| `◍` | Ownership, shared | Shared |
+| `◩` | Ownership, shared | Shared |
 | `◔` | Ownership, foreign | Foreign |
 | `◌` | Context, inferred | Inferred |
 | `⊕` | Context, new | New |
 | `∆` | Context, changed | Changed |
 | `◈` | Context, optional | Optional |
 
-Some words carry their own glyph instead: Fixed `✚`, Observed `◉`, Live `▶`, Recommended `★`, Rejected `⊘`, Blocked `■`, Unverified `▲`, In progress `◐`, Pending `○`, Todo `□`, Draft `✎`. Every glyph here is one cell wide and none collides with another pill's. The full table is `PILL_ICONS` in `src/emphasis.ts`.
+Some words carry their own glyph instead: Fixed `⊞`, Observed `◉`, Live `▶`, Recommended `⋆`, Rejected `⊘`, Blocked `■`, Unverified `▲`, In progress `◕`, Partial `◔`, Pending `○`, Todo `□`, Draft `▫`, Skipped `↦`, Stale `↭`. Every glyph is drawn from the arrows, geometric shapes and math operators a monospace font is expected to carry, one cell wide, and none collides with another pill's in its table. The full table is `PILL_ICONS` in `src/emphasis.ts`.
 
 - **Detail.** A word replies are told to write may be followed by detail: `[[Passed 12/12]]`, `[[Failed: 3 tests]]`, `[[In progress 40%]]`. An accepted spelling only counts as its word when it is the whole label, so `[[down for maintenance]]` is an unknown label in the error tone, not the word "Down".
 - **Synonyms.** Completed, Complete, OK and Finished display as Done. Fail, Failing and Error display as Failed. Pass displays as Passed, Waiting as Pending, and Needs review as Review.
@@ -73,7 +75,7 @@ Some words carry their own glyph instead: Fixed `✚`, Observed `◉`, Live `▶
 ## Labels
 
 - **Headings.** A `##` heading takes an icon when its word is one of: Finding, Result, Status, Evidence, Cause, Effect, Fix, Risk, Limits, Cost, Decision, Options, Plan, Next, Why, How, Rule, Example, Checked, Verdict, Rollback, Undo, Review, Scoreboard, Terminal, Folder, File, Branch, Ideas, Pills, Colors, Icons.
-- **Lead labels.** Bold text that opens a line, list item, blockquote or table cell takes the same icon: `**Cause:** the lock`. A table cell after the first is left alone.
+- **Lead labels.** Bold text that opens a line, list item, blockquote or table cell takes the same icon: `**Cause:** the lock`. A table cell after the first is left alone. A lead label with no colon takes the action words too, so `- **Check** the log` keeps the check the two-colon form has.
 - **Action lead-ins.** Bold **Check:**, **Do:**, **Next:**, **Unblock:**, **Left:**, **Run:**, **Guard:**, **Undo:** and **See:** take an icon anywhere in a line, so the action that follows a pill is easy to find.
 
 Your own messages, inline code, fenced code and escaped brackets are left alone. Pills inside a fence are never drawn, and a fence opened in one streaming flush and closed in the next is respected.
