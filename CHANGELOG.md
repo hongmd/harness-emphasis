@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0] - 2026-11-22
+
+### Fixed
+
+- Glyphs now appear in the interactive terminal. The renderer drops a `MessageDisplay` hook's `displayContent` (anthropics/claude-code#83957), so a `ui.render` hook on `AssistantMessage` draws the transcript's own row from the same tables. Where both hooks reach the screen, `decorate` leaves an already-drawn line alone, so no glyph doubles. A summary row is left as stored.
+
+### Changed
+
+- `mise.toml` pins Node 26 and TypeScript 7. `src/` type-checks unchanged.
+
+[0.2.0]: https://github.com/hongmd/harness-emphasis/compare/v0.1.1...v0.2.0
+
 ## [0.1.1] - 2026-11-22
 
 ### Fixed
