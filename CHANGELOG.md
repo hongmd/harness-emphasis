@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0] - 2026-11-22
+
+### Changed
+
+- A pill is drawn as inline code instead of bold. Bold alone disappears where the terminal font's bold face sits close to its regular face, which left the glyph as the only signal; an inline code span takes the renderer's code color, so a pill reads apart in any font. Lead labels and headings keep bold.
+- A pill's backticks reach the screen, so copying a reply with the mouse or `/copy` carries them. The stored message and ctrl+o are unchanged.
+
+[0.3.0]: https://github.com/hongmd/harness-emphasis/compare/v0.2.0...v0.3.0
+
 ## [0.2.0] - 2026-11-22
 
 ### Fixed
