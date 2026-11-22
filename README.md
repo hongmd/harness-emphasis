@@ -117,7 +117,7 @@ The rules all live in `src/emphasis.ts` and are tested without Claude Code runni
 
 ### Releases
 
-The version lives in `.claude-plugin/plugin.json` (and is mirrored in `package.json`). Bump both, push to `main`, and CI tags that commit `v<version>` and publishes a GitHub release with generated notes. A version that already has a release is left alone, so merging does not re-tag.
+Each release is listed in [CHANGELOG.md](CHANGELOG.md). The version lives in `.claude-plugin/plugin.json` (and is mirrored in `package.json`). Bump both, add a CHANGELOG entry, push to `main`, and CI tags that commit `v<version>` and publishes a GitHub release with generated notes. A version that already has a release is left alone, so merging does not re-tag.
 
 ```sh
 npm version --no-git-tag-version patch   # or minor / major
